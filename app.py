@@ -36,13 +36,13 @@ jwt = JWTManager(app)
 mail = Mail(app)
 url = os.getenv('DATABASE_URL')
 connection = psycopg2.connect(url)
-app.config['JWT_SECRET_KEY'] = os. getenv('JWT_SECRET_KEY')  # took random guide for temporary basis
-app.config['MAIL_SERVER'] = os. getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = os. getenv('MAIL_PORT')
-app.config['MAIL_USERNAME'] = os. getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os. getenv('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = os. getenv('MAIL_USE_TLS')
-app.config['MAIL_USE_SSL'] = os. getenv('MAIL_USE_SSL')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  # took random guide for temporary basis
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS')
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
 
 
 @app.route('/endpoints')
@@ -52,7 +52,7 @@ def api():
 
 @app.route('/api/register', methods=['POST'])
 def register():
-    default_value=None
+    default_value = None
     fname = request.form.get('fname', default_value)
     lname = request.form.get('lname', default_value)
     email = request.form.get('mail', default_value)
@@ -73,7 +73,7 @@ def login():
 
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(VERIFY_USER_EXISTENCE,(email, pswd))
+            cursor.execute(VERIFY_USER_EXISTENCE, (email, pswd))
             if cursor.fetchone():
                 access_token = create_access_token(identity=email)
                 return jsonify(message="Login Successful", access_token=access_token), 200
@@ -101,7 +101,7 @@ def retrieve_password(email: str):
                 cursor.execute(GET_USER_CRED, (email,))
                 msg = Message(
                     "Your password is \"" + cursor.fetchone()[1] + "\" If you haven't requested for password, please "
-                                                            "ignore this mail",
+                                                                   "ignore this mail",
                     sender="admin@dhaan-api.com",
                     recipients=[cursor.fetchone()[0]])
                 # msg.subject("API Password")
@@ -185,12 +185,12 @@ def no_of_donations():
             return jsonify(donations=cursor.fetchone()[0])
 
 
-@app.route('/api/no_of_benificiaries', methods=['GET'])
-def no_of_benificiaries():
+@app.route('/api/no_of_beneficiaries', methods=['GET'])
+def no_of_beneficiaries():
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(NO_OF_BENEFICIARIES)
-            return jsonify(benificiaries=cursor.fetchone()[0])
+            return jsonify(beneficiaries=cursor.fetchone()[0])
 
 
 @app.route('/api/no_of_donors', methods=['GET'])
@@ -206,13 +206,23 @@ def user_transactions():
     email = request.form.get('mail', None)
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(TRANSACTIONS_BY_USER, (email, ))
+            cursor.execute(TRANSACTIONS_BY_USER, (email,))
             # lst=[]
             # for i in cursor:
             #     lst.append(i)
             data = cursor.fetchall()
             data_list = [dict(zip([column[0] for column in cursor.description], row)) for row in data]
             return jsonify(data_list)
+
+
+@app.route('/')
+def home():
+    return render_template('/index.html')
+
+
+@app.route('/docs')
+def docs():
+    return render_template('/docs.html')
 
 
 if __name__ == '__main__':
