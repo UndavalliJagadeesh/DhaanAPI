@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DhaanAPI - Docs</title>
+</head>
+<body>
+
+    <h1 id="dhaanapi">DhaanAPI</h1>
+    <h2 id="endpoints">/endpoints</h2>
+    <ul>
+    <li>Description: The various endpoints that are provided with the API.</li>
+    </ul>
+    <h3 id="post-apiregister">POST <code> /api/register</code></h3>
+    <ul>
+    <li>Description: Register a new user </li>
+    <li>Request Body:<ul>
+    <li>fname (str, required) - First name</li>
+    <li>lname (str, required) - Last name</li>
+    <li>mail (str, required) - Email </li>
+    <li>pswd (str, required) - Password</li>
+    <li>grp (str, required) - Blood group</li>
+    </ul>
+    </li>
+    <li>Response: <ul>
+    <li>201 Created with user id</li>
+    <li>401 Unauthorized if user exists</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="post-apilogin">POST <code> /api/login</code></h3>
+    <ul>
+    <li>Description: Login and get JWT token</li>
+    <li>Request Body: <ul>
+    <li>mail (str, required) - Email</li>
+    <li>pswd (str, required) - Password</li>
+    </ul>
+    </li>
+    <li>Response:<ul>
+    <li>200 OK with access token  </li>
+    <li>401 Unauthorized if invalid credentials</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apitoken">GET <code> /api/token</code></h3>
+    <ul>
+    <li>Description: Generate JWT token for user </li>
+    <li>Request Body:<ul>
+    <li>mail (str, required) - Email</li>
+    </ul>
+    </li>
+    <li>Response: <ul>
+    <li>200 OK with access token</li>
+    <li>404 Not Found if user doesn&#39;t exist</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apiretrieve_passwordstringemail">GET <code>/api/retrieve_password/&lt;string:email&gt;</code></h3>
+    <ul>
+    <li>Description: Retrieve password for a user</li>
+    <li>Parameters:<ul>
+    <li>email (str, required) - Email</li>
+    </ul>
+    </li>
+    <li>Response:<ul>
+    <li>200 OK, password sent to email </li>
+    <li>401 Unauthorized if user doesn&#39;t exist</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="post-apiupdate_password">POST <code> /api/update_password</code></h3>
+    <ul>
+    <li>Description: Update password for a user </li>
+    <li>Request Body:<ul>
+    <li>mail (str, required) - Email</li>
+    <li>pswd (str, required) - Current password</li>
+    <li>newPswd (str, required) - New password</li>
+    <li>confirm_pswd (str, required) - Confirm new password</li>
+    </ul>
+    </li>
+    <li>Response:<ul>
+    <li>202 Accepted, password updated</li>
+    <li>401 Unauthorized if current password is incorrect</li>
+    <li>404 Not Found if user doesn&#39;t exist</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="post-apiprocess_transaction">POST <code> /api/process_transaction</code></h3>
+    <ul>
+    <li>Description: Process a blood donation/request transaction</li>
+    <li>Headers:<ul>
+    <li>Authorization: JWT token</li>
+    </ul>
+    </li>
+    <li>Request Body:<ul>
+    <li>type (int, required) - 0 for donation, 1 for request</li>
+    <li>amount (int, required) - Units </li>
+    <li>location (str, required)</li>
+    </ul>
+    </li>
+    <li>Response:<ul>
+    <li>200 OK, transaction processed</li>
+    <li>401 Unauthorized if invalid token</li>
+    <li>403 Forbidden if insufficient units available</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apiremaining_units">GET <code> /api/remaining_units</code></h3>
+    <ul>
+    <li>Description: Get available blood units</li>
+    <li>Response:<ul>
+    <li>JSON with available_units count</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apino_of_users">GET <code> /api/no_of_users</code></h3>
+    <ul>
+    <li>Description: Get total registered users</li>
+    <li>Response: <ul>
+    <li>JSON with registered_users count</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apino_of_donations">GET <code> /api/no_of_donations</code></h3>
+    <ul>
+    <li>Description: Get total donations</li>
+    <li>Response:<ul>
+    <li>JSON with donations count</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apino_of_beneficiaries">GET <code> /api/no_of_beneficiaries</code></h3>
+    <ul>
+    <li>Description: Get total beneficiaries </li>
+    <li>Response:<ul>
+    <li>JSON with beneficiaries count</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apino_of_donors">GET <code> /api/no_of_donors</code></h3>
+    <ul>
+    <li>Description: Get total unique donors</li>
+    <li>Response:<ul>
+    <li>JSON with donors count</li>
+    </ul>
+    </li>
+    </ul>
+    <h3 id="get-apiuser_transactions">GET <code> /api/user_transactions</code></h3>
+    <ul>
+    <li>Description: Get transactions for a user</li>
+    <li>Request Body:<ul>
+    <li>mail (str, required) - Email</li>
+    </ul>
+    </li>
+    <li>Response:<ul>
+    <li>JSON list of transactions</li>
+    </ul>
+    </li>
+    </ul>
+
+    <h2>Models</h2>
+    <!-- ## Models -->
+    
+    <h3 id="user">User</h3>
+    <ul>
+    <li>id (int)</li>
+    <li>first_name (str) </li>
+    <li>last_name (str)</li>
+    <li>email (str)</li>
+    <li>password (str)</li>
+    <li>blood_group (str)</li>
+    </ul>
+    <h3 id="transaction">Transaction</h3>
+    <ul>
+    <li>transaction_id (int)</li>
+    <li>user_id (int) - Foreign key to User </li>
+    <li>transaction_type (int) - 0 for donation, 1 for request</li>
+    <li>amount (float) - Units</li>
+    <li>location (str)</li>
+    </ul>
+    
+</body>
+</html>
