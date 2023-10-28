@@ -34,6 +34,7 @@ load_dotenv()
 app = Flask(__name__)
 jwt = JWTManager(app)
 mail = Mail(app)
+
 url = os.getenv('DATABASE_URL')
 connection = psycopg2.connect(url)
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  # took random guide for temporary basis
@@ -47,7 +48,11 @@ app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
 
 @app.route('/endpoints')
 def api():
-    return jsonify(message="Available end-points", endpoints="/api /register /login /retrive_password /update_password")
+    return jsonify(message="Available end-points", endpoints='/api/register /api/login /api/retrieve_password '
+                                                             '/api/update_password /api/process_transaction '
+                                                             '/api/remaining_units /api/no_of_users '
+                                                             '/api/no_of_donations /api/no_of_beneficiaries '
+                                                             '/api/no_of_donors /api/user_transactions')
 
 
 @app.route('/api/register', methods=['POST'])
