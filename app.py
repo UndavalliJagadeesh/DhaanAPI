@@ -66,6 +66,9 @@ def register():
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(CREATE_USER_TABLE)
+            cursor.execute(VERIFY_USER_LOGGED, (email,))
+            if cursor.fetchone()[0]:
+                return jsonify(message="Email already exists"), 409
             cursor.execute(INSERT_NEW_USER, (fname, lname, email, pswd, grp))
             user_id = cursor.fetchone()[0]
     return jsonify(id=user_id, message=f"User {fname, lname} created"), 201
