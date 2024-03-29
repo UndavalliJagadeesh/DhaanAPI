@@ -16,7 +16,7 @@
         <li>Description: The various endpoints that are provided with the API.</li>
     </ul>
 
-    <h3 id="post-apiregister">POST <code> /api/register</code></h3>
+    <h3 id="post-api-register">POST <code> /api/register</code></h3>
     <ul>
         <li>Description: Register a new user </li>
         <li>Request Body:
@@ -36,7 +36,7 @@
         </li>
     </ul>
 
-    <h3 id="post-apilogin">POST <code> /api/login</code></h3>
+    <h3 id="post-api-login">POST <code> /api/login</code></h3>
     <ul>
         <li>Description: Login and get JWT token</li>
         <li>Request Body:
@@ -85,7 +85,7 @@
         </li>
     </ul>
 
-    <h3 id="post-apiupdate_password">POST <code> /api/update_password</code></h3>
+    <h3 id="post-api-update_password">POST <code> /api/update_password</code></h3>
     <ul>
         <li>Description: Update password for a user </li>
         <li>Request Body:
@@ -105,7 +105,7 @@
         </li>
     </ul>
 
-    <h3 id="post-apiprocess_transaction">POST <code> /api/process_transaction</code></h3>
+    <h3 id="post-api-process_transaction">POST <code> /api/process_transaction</code></h3>
     <ul>
         <li>Description: Process a blood donation/request transaction</li>
         <li>Headers:
@@ -125,6 +125,16 @@
                 <li>200 OK, transaction processed</li>
                 <li>401 Unauthorized if invalid token</li>
                 <li>403 Forbidden if insufficient units available</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3 id="get-api-total-donated">GET <code> /api/total_donated</code></h3>
+    <ul>
+        <li>Description: Get total blood units donated</li>
+        <li>Response:
+            <ul>
+                <li>JSON with total_donated count</li>
             </ul>
         </li>
     </ul>
