@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
 import os
 import psycopg2
 from dotenv import load_dotenv
@@ -34,6 +35,7 @@ load_dotenv()
 app = Flask(__name__)
 jwt = JWTManager(app)
 mail = Mail(app)
+CORS(app)
 
 url = os.getenv('DATABASE_URL')
 connection = psycopg2.connect(url)
