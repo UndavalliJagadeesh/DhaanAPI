@@ -229,7 +229,7 @@ def transactions_per_month():
 
 
 @app.route('/api/registrations_per_month', methods=['GET'])
-def transactions_per_month():
+def registrations_per_month():
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(USER_REGISTRATIONS_EACH_MONTH)
