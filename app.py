@@ -224,7 +224,7 @@ def transactions_per_day():
         with connection.cursor() as cursor:
             cursor.execute(TRANSACTIONS_EACH_DAY)
             data = cursor.fetchall()
-            data_list = [dict(zip([column[0] for column in cursor.description], row)) for row in data]
+            data_list = [{"transaction_date": row[0], "count": row[1]} for row in data]
             return jsonify(data_list)
 
 
@@ -234,7 +234,7 @@ def registrations_per_day():
         with connection.cursor() as cursor:
             cursor.execute(USER_REGISTRATIONS_EACH_DAY)
             data = cursor.fetchall()
-            data_list = [dict(zip([column[0] for column in cursor.description], row)) for row in data]
+            data_list = [{"registration_date": row[0], "count": row[1]} for row in data]
             return jsonify(data_list)
 
 
