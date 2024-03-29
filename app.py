@@ -183,7 +183,7 @@ def total_donated():
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(TOTAL_DONATED)
-            return jsonify(available_units=cursor.fetchone()[0])
+            return jsonify(donated_units=cursor.fetchone()[0])
 
 
 @app.route('/api/remaining_units', methods=['GET'])
