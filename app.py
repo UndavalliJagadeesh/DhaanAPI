@@ -29,8 +29,8 @@ USERS_PRESENT = "SELECT count(DISTINCT email) FROM \"user\";"
 NO_OF_DONATIONS = "SELECT count(0) FROM \"transaction\";"
 NO_OF_BENEFICIARIES = "SELECT count(1) FROM \"transaction\";"
 TRANSACTIONS_BY_USER = "SELECT transaction_type, amount, location FROM \"user\", \"transaction\" WHERE email = %s AND \"user\".id=\"transaction\".user_id;"
-USER_REGISTRATIONS_EACH_DAY = "SELECT DATE(ts) AS registration_date, COUNT(*) FROM \"user\" GROUP BY DATE(ts) ORDER BY DATE(ts);"
-TRANSACTIONS_EACH_DAY = "SELECT DATE(ts) AS transaction_date, COUNT(*) FROM \"transaction\" GROUP BY DATE(ts) ORDER BY DATE(ts);"
+USER_REGISTRATIONS_EACH_MONTH = "SELECT EXTRACT(MONTH FROM ts) AS month, EXTRACT(YEAR FROM ts) AS year, COUNT(*) AS total_registrations FROM \"user\" GROUP BY year, month ORDER BY year, month;"
+TRANSACTIONS_EACH_MONTH = "SELECT EXTRACT(MONTH FROM ts) AS month, EXTRACT(YEAR FROM ts) AS year, COUNT(*) AS total_transactions FROM \"transaction\" GROUP BY year, month ORDER BY year, month;"
 NO_OF_DONORS = "SELECT COUNT(DISTINCT user_id) FROM \"transaction\";"
 
 load_dotenv()
@@ -218,23 +218,23 @@ def no_of_donors():
             return jsonify(donors=cursor.fetchone()[0])
 
 
-@app.route('/api/transactions_per_day', methods=['GET'])
-def transactions_per_day():
+@app.route('/api/transactions_per_month', methods=['GET'])
+def transactions_per_month():
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(TRANSACTIONS_EACH_DAY)
+            cursor.execute(TRANSACTIONS_EACH_MONTH)
             data = cursor.fetchall()
-            data_list = [{"transaction_date": row[0], "count": row[1]} for row in data]
+            data_list = [{'month': row[0], 'year': row[1],'total_transactions': row[2]} for row in data]
             return jsonify(data_list)
 
 
-@app.route('/api/registrations_per_day', methods=['GET'])
-def registrations_per_day():
+@app.route('/api/registrations_per_month', methods=['GET'])
+def transactions_per_month():
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(USER_REGISTRATIONS_EACH_DAY)
+            cursor.execute(USER_REGISTRATIONS_EACH_MONTH)
             data = cursor.fetchall()
-            data_list = [{"registration_date": row[0], "count": row[1]} for row in data]
+            data_list = [{'month': row[0], 'year': row[1],'total_registrations': row[2]} for row in data]
             return jsonify(data_list)
 
 
