@@ -32,7 +32,7 @@ TRANSACTIONS_BY_USER = "SELECT transaction_type, amount, location FROM \"user\",
 USER_REGISTRATIONS_EACH_MONTH = "SELECT EXTRACT(MONTH FROM ts) AS month, EXTRACT(YEAR FROM ts) AS year, COUNT(*) AS total_registrations FROM \"user\" GROUP BY year, month ORDER BY year, month;"
 TRANSACTIONS_EACH_MONTH = "SELECT EXTRACT(MONTH FROM ts) AS month, EXTRACT(YEAR FROM ts) AS year, COUNT(*) AS total_transactions FROM \"transaction\" GROUP BY year, month ORDER BY year, month;"
 NO_OF_DONORS = "SELECT COUNT(DISTINCT user_id) FROM \"transaction\";"
-TOTAL_DONATED = "SELECT SUM(amount) AS total_amount_donated FROM \"transaction\" WHERE transaction_type = 1;"
+TOTAL_DONATED = "SELECT SUM(amount) AS total_amount_donated FROM \"transaction\" WHERE transaction_type = 0;"
 
 load_dotenv()
 
