@@ -5,17 +5,18 @@ import psycopg2
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, decode_token, get_jwt_identity
 from flask_mail import Mail, Message
+from datetime import datetime, timezone
 
 # creating queries
 CREATE_USER_TABLE = (
-    "CREATE TABLE IF NOT EXISTS \"user\" (id SERIAL PRIMARY KEY, first_name VARCHAR, last_name VARCHAR, email VARCHAR, password VARCHAR, blood_group VARCHAR);"
+    "CREATE TABLE IF NOT EXISTS \"user\" (id SERIAL PRIMARY KEY, first_name VARCHAR, last_name VARCHAR, email VARCHAR, password VARCHAR, blood_group VARCHAR, ts TIMESTAMP);"
 )
 CREATE_TRANSACTION_TABLE = (
-    """CREATE TABLE IF NOT EXISTS \"transaction\" (transaction_id SERIAL PRIMARY KEY, user_id INTEGER, transaction_type INTEGER, amount REAL, location VARCHAR, FOREIGN KEY(user_id) REFERENCES \"user\"(id) ON DELETE CASCADE);"""
+    """CREATE TABLE IF NOT EXISTS \"transaction\" (transaction_id SERIAL PRIMARY KEY, user_id INTEGER, transaction_type INTEGER, amount REAL, location VARCHAR, ts TIMESTAMP, FOREIGN KEY(user_id) REFERENCES \"user\"(id) ON DELETE CASCADE);"""
 )
 # type - credit(0), debit(1)
 INSERT_NEW_USER = "INSERT INTO \"user\" (first_name, last_name, email, password, blood_group) VALUES (%s, %s, %s, %s, %s) RETURNING id;"
-INSERT_NEW_TRANSACTION = "INSERT INTO \"transaction\" (user_id, transaction_type, amount, location) VALUES (%s, %s, %s, %s);"
+INSERT_NEW_TRANSACTION = "INSERT INTO \"transaction\" (user_id, transaction_type, amount, location, ts) VALUES (%s, %s, %s, %s, %s);"
 VERIFY_USER_EXISTENCE = "SELECT EXISTS ( SELECT 1 FROM \"user\" WHERE email LIKE %s AND password LIKE %s);"
 VERIFY_USER_LOGGED = "SELECT EXISTS ( SELECT 1 FROM \"user\" WHERE email LIKE %s);"
 GET_USER_CRED = "SELECT email, password FROM \"user\" WHERE email LIKE %s;"
@@ -28,6 +29,8 @@ USERS_PRESENT = "SELECT count(DISTINCT email) FROM \"user\";"
 NO_OF_DONATIONS = "SELECT count(0) FROM \"transaction\";"
 NO_OF_BENEFICIARIES = "SELECT count(1) FROM \"transaction\";"
 TRANSACTIONS_BY_USER = "SELECT transaction_type, amount, location FROM \"user\", \"transaction\" WHERE email = %s AND \"user\".id=\"transaction\".user_id;"
+USER_REGISTRATIONS_EACH_DAY = "SELECT DATE(ts) AS registration_date, COUNT(*) FROM "user" GROUP BY DATE(ts) ORDER BY DATE(ts);"
+TRANSACTIONS_EACH_DAY = "SELECT DATE(ts) AS transaction_date, COUNT(*) FROM "transaction" GROUP BY DATE(ts) ORDER BY DATE(ts);"
 NO_OF_DONORS = "SELECT COUNT(DISTINCT user_id) FROM \"transaction\";"
 
 load_dotenv()
@@ -65,13 +68,15 @@ def register():
     email = request.form.get('mail', default_value)
     pswd = request.form.get('pswd', default_value)
     grp = request.form.get('grp', default_value)
+    timestamp = datetime.now(timezone.utc)
+    
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(CREATE_USER_TABLE)
             cursor.execute(VERIFY_USER_LOGGED, (email,))
             if cursor.fetchone()[0]:
                 return jsonify(message="Email already exists"), 409
-            cursor.execute(INSERT_NEW_USER, (fname, lname, email, pswd, grp))
+            cursor.execute(INSERT_NEW_USER, (fname, lname, email, pswd, grp, timestamp))
             user_id = cursor.fetchone()[0]
     return jsonify(id=user_id, message=f"User {fname, lname} created"), 201
 
@@ -162,11 +167,13 @@ def process_transaction():
                 transaction_type = request.form.get('type', None)
                 amount = request.form.get('amount', None)
                 location = request.form.get('location', None)
+                timestamp = datetime.now(timezone.utc)
+                
                 cursor.execute(AVAILABLE_UNITS)
                 if transaction_type == '1':
                     if int(amount) < int(cursor.fetchone()[0]):
                         return jsonify(message='Required units not available')
-                cursor.execute(INSERT_NEW_TRANSACTION, (user_id, transaction_type, amount, location))
+                cursor.execute(INSERT_NEW_TRANSACTION, (user_id, transaction_type, amount, location, timestamp))
                 return jsonify(message="Transaction updated Successfully."), 200
             return jsonify(message='User not found'), 401
 
@@ -211,6 +218,26 @@ def no_of_donors():
             return jsonify(donors=cursor.fetchone()[0])
 
 
+@app.route('/api/transactions_per_day', methods=['GET'])
+def transactions_per_day():
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(TRANSACTIONS_EACH_DAY)
+            data = cursor.fetchall()
+            data_list = [dict(zip([column[0] for column in cursor.description], row)) for row in data]
+            return jsonify(data_list)
+
+
+@app.route('/api/registrations_per_day', methods=['GET'])
+def registrations_per_day():
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(USER_REGISTRATIONS_EACH_DAY)
+            data = cursor.fetchall()
+            data_list = [dict(zip([column[0] for column in cursor.description], row)) for row in data]
+            return jsonify(data_list)
+
+
 @app.route('/api/user_transactions', methods=['GET'])
 def user_transactions():
     email = request.form.get('mail', None)
@@ -223,7 +250,7 @@ def user_transactions():
             data = cursor.fetchall()
             data_list = [dict(zip([column[0] for column in cursor.description], row)) for row in data]
             return jsonify(data_list)
-
+            
 
 @app.route('/')
 def home():
