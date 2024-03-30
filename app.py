@@ -69,7 +69,7 @@ def register():
     email = request.form.get('mail', default_value)
     pswd = request.form.get('pswd', default_value)
     grp = request.form.get('grp', default_value)
-    timestamp = datetime.utcnow()
+    timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
     
     with connection:
         with connection.cursor() as cursor:
@@ -168,7 +168,7 @@ def process_transaction():
                 transaction_type = request.form.get('type', None)
                 amount = request.form.get('amount', None)
                 location = request.form.get('location', None)
-                timestamp = datetime.utcnow()
+                timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
                 
                 cursor.execute(AVAILABLE_UNITS)
                 if transaction_type == '1':
