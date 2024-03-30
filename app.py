@@ -15,7 +15,7 @@ CREATE_TRANSACTION_TABLE = (
     """CREATE TABLE IF NOT EXISTS \"transaction\" (transaction_id SERIAL PRIMARY KEY, user_id INTEGER, transaction_type INTEGER, amount REAL, location VARCHAR, ts TIMESTAMP, FOREIGN KEY(user_id) REFERENCES \"user\"(id) ON DELETE CASCADE);"""
 )
 # type - credit(0), debit(1)
-INSERT_NEW_USER = "INSERT INTO \"user\" (first_name, last_name, email, password, blood_group) VALUES (%s, %s, %s, %s, %s) RETURNING id;"
+INSERT_NEW_USER = "INSERT INTO \"user\" (first_name, last_name, email, password, blood_group, ts) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;"
 INSERT_NEW_TRANSACTION = "INSERT INTO \"transaction\" (user_id, transaction_type, amount, location, ts) VALUES (%s, %s, %s, %s, %s);"
 VERIFY_USER_EXISTENCE = "SELECT EXISTS ( SELECT 1 FROM \"user\" WHERE email LIKE %s AND password LIKE %s);"
 VERIFY_USER_LOGGED = "SELECT EXISTS ( SELECT 1 FROM \"user\" WHERE email LIKE %s);"
