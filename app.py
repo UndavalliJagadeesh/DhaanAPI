@@ -54,11 +54,20 @@ app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL')
 
 @app.route('/endpoints')
 def api():
-    return jsonify(message="Available end-points", endpoints='/api/register, /api/login, /api/retrieve_password, '
-                                                             '/api/update_password, /api/process_transaction, '
-                                                             '/api/remaining_units, /api/no_of_users, '
-                                                             '/api/no_of_donations, /api/no_of_beneficiaries, '
-                                                             '/api/no_of_donors, /api/user_transactions')
+    endpoints = [
+        '/api/register',
+        '/api/login',
+        '/api/retrieve_password',
+        '/api/update_password',
+        '/api/process_transaction',
+        '/api/remaining_units',
+        '/api/no_of_users',
+        '/api/no_of_donations',
+        '/api/no_of_beneficiaries',
+        '/api/no_of_donors',
+        '/api/user_transactions'
+    ]
+    return jsonify(message="Available endpoints", endpoints=endpoints), 200
 
 
 @app.route('/api/register', methods=['POST'])
